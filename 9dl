@@ -1,1 +1,66 @@
-/home/zecho/bin/9dl
+#!/bin/bash
+#
+# Copyright © 2015 Antoine Piau <zecho@riseup.net>
+# This work is free. You can redistribute it and/or modify it under the
+# terms of the Do What The Fuck You Want To Public License, Version 2,
+# as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
+
+dl_directory="~/Images/new_fun"
+
+grep_id () {
+	if [[ $(echo "$i"|grep "m.9gag.com") ]]; then
+		id=$(echo $i |awk -F"http://m.9gag.com/gag/" '{print $2}')
+	else
+		id=$(echo $i |awk -F"http://9gag.com/gag/" '{print $2}')
+	fi
+}
+
+convert_link_img () {
+	grep_id
+	to_dl=http://img-9gag-fun.9cache.com/photo/"$id"_700b.jpg
+}
+
+convert_link_vid () {
+	grep_id
+	to_dl=http://img-9gag-fun.9cache.com/photo/"$id"_460sv.mp4
+}
+
+## Partie conversion d'un lien
+if [ $1 = "conv" ]; then
+	i=$2
+	convert_link_img
+	echo $to_dl
+	echo or
+	convert_link_vid
+	echo $to_dl
+	exit 0
+fi
+
+
+## Partie téléchargement
+read -p 'Sauvegarder dans Images/new_fun (défaut) ou ici ? [taper . pour ici] ' ans
+if [[ "$ans" != "." ]]; then
+	cd $dl_directory
+fi
+
+for i in $*; do 
+	convert_link_vid
+	wget $to_dl
+
+	if [ $? != 0 ]; then
+		convert_link_img
+		wget $to_dl
+		if [[ $? = 0 ]]; then
+			echo "$i est téléchargé"
+		else
+			echo "ÇA N'A PAS MARCHÉ"
+			prob=1
+		fi
+	else 
+		echo "$i est téléchargé"
+	fi
+done
+
+if [[ $prob ]]; then
+	echo "UN OU PLUSIEURS FICHIERS N'ONT PAS ÉTÉ TÉLÉCHARGÉ"
+fi
