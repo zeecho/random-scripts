@@ -5,7 +5,7 @@
 # terms of the Do What The Fuck You Want To Public License, Version 2,
 # as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
 
-dl_directory="~/Images/new_fun"
+dl_directory=$HOME/Images/new_fun
 
 grep_id () {
 	if [[ $(echo "$i"|grep "m.9gag.com") ]]; then
